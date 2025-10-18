@@ -15,8 +15,11 @@ final class AppState: ObservableObject {
     @Published var lastImportError: String?
     @Published var isImporting: Bool = false
 
-//     Parsed conversations: conversationID -> [Message]
+    // Parsed conversations: conversationID -> [Message]
     @Published var conversations: [String: [Message]] = [:]
+
+    // Currently selected conversation
+    @Published var selectedConversationID: String?
 }
 
 struct ContentView: View {
@@ -66,13 +69,19 @@ struct ContentView: View {
 
                 appState.selectedFolder = url
 
-//                 Load conversations from json/chat_history.json
+                // Load conversations from json/chat_history.json
                 let loader = SnapchatExportLoader()
                 let conversations = try await loader.load(from: appState.selectedFolder)
                 appState.conversations = conversations
+
+                // If nothing selected yet, default to the first conversation (alphabetical)
+                if appState.selectedConversationID == nil {
+                    appState.selectedConversationID = conversations.keys.sorted().first
+                }
             } catch {
                 appState.lastImportError = error.localizedDescription
                 appState.conversations = [:]
+                appState.selectedConversationID = nil
             }
         }
     }
@@ -103,7 +112,12 @@ struct ListView: View {
                         .foregroundStyle(.secondary)
                         .padding(.top, 8)
                 } else {
-                    List {
+                    List(selection: Binding(
+                        get: { appState.selectedConversationID.map { Set([ $0 ]) } ?? [] },
+                        set: { newSelection in
+                            appState.selectedConversationID = newSelection.first
+                        })
+                    ) {
                         ForEach(sortedConversationIDs, id: \.self) { convoID in
                             let count = appState.conversations[convoID]?.count ?? 0
                             HStack {
@@ -114,6 +128,11 @@ struct ListView: View {
                                 Spacer()
                                 Text("\(count)")
                                     .foregroundStyle(.secondary)
+                            }
+                            .contentShape(Rectangle())
+                            .tag(convoID)
+                            .onTapGesture {
+                                appState.selectedConversationID = convoID
                             }
                             .help("Conversation ID: \(convoID)\nMessages: \(count)")
                         }
@@ -150,8 +169,132 @@ struct MainView: View {
                     .foregroundStyle(.red)
                     .font(.caption)
             }
+
+            if let convoID = appState.selectedConversationID,
+               let messages = appState.conversations[convoID], !messages.isEmpty {
+                ConversationView(conversationID: convoID, messages: messages)
+            } else if appState.selectedFolder != nil && appState.lastImportError == nil && !appState.isImporting {
+                Text("Select a conversation to view messages.")
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding()
+    }
+}
+
+private struct ConversationView: View {
+    let conversationID: String
+    let messages: [Message]
+
+    private var sortedMessages: [Message] {
+        messages.sorted {
+            // Sort by microseconds if present, else by createdDate, else fallback to string compare to stabilize
+            if let a = $0.createdMicroseconds, let b = $1.createdMicroseconds {
+                return a < b
+            }
+            if let ad = $0.createdDate, let bd = $1.createdDate {
+                return ad < bd
+            }
+            return ($0.createdStringUTC ?? "") < ($1.createdStringUTC ?? "")
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Conversation")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(conversationID)
+                .font(.headline.monospaced())
+                .lineLimit(1)
+                .truncationMode(.middle)
+
+            Divider()
+
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 10) {
+                    ForEach(sortedMessages) { msg in
+                        MessageRow(message: msg)
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+        }
+    }
+}
+
+private struct MessageRow: View {
+    let message: Message
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            // Simple bubble alignment: right if isSender == true
+            if message.isSender == true { Spacer(minLength: 20) }
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(senderText)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    if let dateText = dateString {
+                        Text("• \(dateText)")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+
+                Group {
+                    if let media = message.mediaType, media.lowercased() != "text" {
+                        Text(mediaDisplay(media, ids: message.mediaIDs))
+                            .font(.callout)
+                            .italic()
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text(message.content ?? "(no content)")
+                            .font(.body)
+                    }
+                }
+                .padding(0.8)
+                .background(bubbleBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            }
+            .frame(maxWidth: 400, alignment: .leading)
+
+            if message.isSender != true { Spacer(minLength: 20) }
+        }
+        .padding(.horizontal, 4)
+    }
+
+    private var senderText: String {
+        if let isSender = message.isSender {
+            return isSender ? (message.from ?? "You") : (message.from ?? "Unknown")
+        }
+        return message.from ?? "Unknown"
+    }
+
+    private var dateString: String? {
+        if let d = message.createdDate {
+            let df = DateFormatter()
+            df.dateStyle = .medium
+            df.timeStyle = .short
+            return df.string(from: d)
+        }
+        return message.createdStringUTC
+    }
+
+    private var bubbleBackground: some ShapeStyle {
+        if message.isSender == true {
+            return AnyShapeStyle(Color.accentColor.opacity(0.15))
+        } else {
+            return AnyShapeStyle(Color.secondary.opacity(0.12))
+        }
+    }
+
+    private func mediaDisplay(_ media: String, ids: String?) -> String {
+        if let ids, !ids.isEmpty {
+            return "[\(media) • IDs: \(ids)]"
+        }
+        return "[\(media)]"
     }
 }
 
