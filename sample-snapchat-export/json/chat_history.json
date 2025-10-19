@@ -1,0 +1,59 @@
+{
+    "acquaintance": [
+        {
+            "From": "myusername",
+            "Media Type": "TEXT",
+            "Created": "2021-01-29 05:46:31 UTC",
+            "Content": "thank you🍻",
+            "Conversation Title": null,
+            "IsSender": true,
+            "Created(microseconds)": 1611899191436,
+            "IsSaved": true,
+            "Media IDs": ""
+        },
+        {
+            "From": "myusername",
+            "Media Type": "TEXT",
+            "Created": "2019-01-28 19:00:39 UTC",
+            "Content": "Thankyouu",
+            "Conversation Title": null,
+            "IsSender": true,
+            "Created(microseconds)": 1548702039506,
+            "IsSaved": true,
+            "Media IDs": ""
+        },
+        {
+            "From": "acquaintance",
+            "Media Type": "TEXT",
+            "Created": "2019-01-28 18:41:42 UTC",
+            "Content": "Happy birthday ",
+            "Conversation Title": null,
+            "IsSender": false,
+            "Created(microseconds)": 1548700902737,
+            "IsSaved": true,
+            "Media IDs": ""
+        },
+        {
+            "From": "acquaintance",
+            "Media Type": "TEXT",
+            "Created": "2018-08-29 12:17:11 UTC",
+            "Content": "Thank you 😊💝",
+            "Conversation Title": null,
+            "IsSender": false,
+            "Created(microseconds)": 1535545031109,
+            "IsSaved": true,
+            "Media IDs": ""
+        },
+        {
+            "From": "myusername",
+            "Media Type": "TEXT",
+            "Created": "2018-08-29 12:16:11 UTC",
+            "Content": "Happy birthday🎂🎉",
+            "Conversation Title": null,
+            "IsSender": true,
+            "Created(microseconds)": 1535544971299,
+            "IsSaved": true,
+            "Media IDs": ""
+        }
+    ],
+}

@@ -6,14 +6,26 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		489D3F1E2EA4D6BA00229903 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 489D3F1D2EA4D6BA00229903 /* .gitignore */; };
+		489D3F202EA4D6BC00229903 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 489D3F1F2EA4D6BC00229903 /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		489D3F0A2EA37C3C00229903 /* Snapchat Memory Jar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Snapchat Memory Jar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		489D3F1D2EA4D6BA00229903 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		489D3F1F2EA4D6BC00229903 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		489D3F0C2EA37C3C00229903 /* Snapchat Memory Jar */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Snapchat Memory Jar";
+			sourceTree = "<group>";
+		};
+		489D3F212EA4D9BA00229903 /* sample-snapchat-export */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "sample-snapchat-export";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,8 +44,11 @@
 		489D3F012EA37C3C00229903 = {
 			isa = PBXGroup;
 			children = (
+				489D3F212EA4D9BA00229903 /* sample-snapchat-export */,
 				489D3F0C2EA37C3C00229903 /* Snapchat Memory Jar */,
 				489D3F0B2EA37C3C00229903 /* Products */,
+				489D3F1F2EA4D6BC00229903 /* README.md */,
+				489D3F1D2EA4D6BA00229903 /* .gitignore */,
 			);
 			sourceTree = "<group>";
 		};
@@ -62,6 +77,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				489D3F0C2EA37C3C00229903 /* Snapchat Memory Jar */,
+				489D3F212EA4D9BA00229903 /* sample-snapchat-export */,
 			);
 			name = "Snapchat Memory Jar";
 			packageProductDependencies = (
@@ -111,6 +127,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				489D3F202EA4D6BC00229903 /* README.md in Resources */,
+				489D3F1E2EA4D6BA00229903 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
