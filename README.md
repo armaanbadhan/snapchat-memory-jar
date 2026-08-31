@@ -21,4 +21,9 @@ Expected folder structure inside your selected folder:
 - json/chat_history.json
 - chat_media/ (contains images with filenames that include media IDs)
 
-Example:
+
+
+# Downloading .dmg directly
+after moving Snapchat Memory Jar to Applications, you'll have to run the following command on terminal to get rid of quarantine flag - it is flagged by apple as the application isn't signed and notarized.
+
+```xattr -cr /Applications/Snapchat\ Memory\ Jar.app```
