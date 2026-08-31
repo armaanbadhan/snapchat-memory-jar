@@ -48,29 +48,21 @@ jobs:
       - name: Install create-dmg
         run: brew install create-dmg
 
-      - name: Create DMG
-        run: |
-          # Automatically find where xcodebuild dropped the .app bundle inside the build folder
-          DETECTED_APP_PATH=$(find build -name "${{ env.APP_NAME }}.app" | head -n 1)
-          
-          create-dmg \
-            --volname "${{ env.APP_NAME }} Installer" \
-            --window-pos 200 120 \
-            --window-size 800 500 \
-            --icon-size 100 \
-            --icon "${{ env.APP_NAME }}.app" 200 250 \
-            --app-drop-link 600 250 \
-            "${{ env.APP_NAME }}-${{ env.VERSION }}.dmg" \
-            "$DETECTED_APP_PATH"
-
       - name: Native GitHub Release Creation
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           DMG_FILE="${{ env.APP_NAME }}-${{ env.VERSION }}.dmg"
           
-          # Uses GitHub's pre-installed official CLI to publish the release and attach the asset
-          gh release create "${{ env.VERSION }}" "$DMG_FILE" \
-            --title "Release ${{ env.VERSION }}" \
-            --notes "Automated build of ${{ env.APP_NAME }}" \
-            --clobber
+          # Check if the release already exists
+          if gh release view "${{ env.VERSION }}" >/dev/null 2>&1; then
+            echo "Release ${{ env.VERSION }} already exists. Uploading asset..."
+            # Uploads and overwrites the DMG file if it's already there
+            gh release upload "${{ env.VERSION }}" "$DMG_FILE" --clobber
+          else
+            echo "Creating a new release for ${{ env.VERSION }}..."
+            # Natively creates the release and attaches the file
+            gh release create "${{ env.VERSION }}" "$DMG_FILE" \
+              --title "Release ${{ env.VERSION }}" \
+              --notes "Automated build of ${{ env.APP_NAME }}"
+          fi
