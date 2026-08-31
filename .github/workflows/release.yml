@@ -68,6 +68,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           DMG_FILE="${{ env.APP_NAME }}-${{ env.VERSION }}.dmg"
+
+          xattr -cr "$DETECTED_APP_PATH"
           
           # Check if the release already exists
           if gh release view "${{ env.VERSION }}" >/dev/null 2>&1; then
