@@ -47,6 +47,21 @@ jobs:
 
       - name: Install create-dmg
         run: brew install create-dmg
+             
+      - name: Create DMG
+        run: |
+          # Automatically find where xcodebuild dropped the .app bundle inside the build folder
+          DETECTED_APP_PATH=$(find build -name "${{ env.APP_NAME }}.app" | head -n 1)
+          
+          create-dmg \
+            --volname "${{ env.APP_NAME }} Installer" \
+            --window-pos 200 120 \
+            --window-size 800 500 \
+            --icon-size 100 \
+            --icon "${{ env.APP_NAME }}.app" 200 250 \
+            --app-drop-link 600 250 \
+            "${{ env.APP_NAME }}-${{ env.VERSION }}.dmg" \
+            "$DETECTED_APP_PATH"
 
       - name: Native GitHub Release Creation
         env:
