@@ -63,11 +63,14 @@ jobs:
             "${{ env.APP_NAME }}-${{ env.VERSION }}.dmg" \
             "$DETECTED_APP_PATH"
 
-      - name: Create GitHub Release and Upload DMG
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ env.VERSION }}
-          name: Release ${{ env.VERSION }}
-          files: "${{ env.APP_NAME }}-${{ env.VERSION }}.dmg"
+      - name: Native GitHub Release Creation
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DMG_FILE="${{ env.APP_NAME }}-${{ env.VERSION }}.dmg"
+          
+          # Uses GitHub's pre-installed official CLI to publish the release and attach the asset
+          gh release create "${{ env.VERSION }}" "$DMG_FILE" \
+            --title "Release ${{ env.VERSION }}" \
+            --notes "Automated build of ${{ env.APP_NAME }}" \
+            --clobber
